@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import React, { Ref, useRef, useEffect } from 'react';
+import React, { Ref, useRef, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useMergeRefs } from '../internal/hooks/use-merge-refs';
 import { IconProps } from '../icon/interfaces';
@@ -104,6 +104,8 @@ function InternalInput(
     ? { autoFocus: !autoFocusEnabled, 'data-awsui-react-autofocus': autoFocusEnabled }
     : {};
 
+  const [compositionState, setCompositionState] = useState(false);
+
   const attributes: React.InputHTMLAttributes<HTMLInputElement> = {
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledby,
@@ -130,8 +132,8 @@ function InternalInput(
     step,
     inputMode,
     spellCheck: spellcheck,
-    onKeyDown: onKeyDown && (event => fireKeyboardEvent(onKeyDown, event)),
-    onKeyUp: onKeyUp && (event => fireKeyboardEvent(onKeyUp, event)),
+    onKeyDown: compositionState ? undefined : onKeyDown && (event => fireKeyboardEvent(onKeyDown, event)),
+    onKeyUp: compositionState ? undefined : onKeyUp && (event => fireKeyboardEvent(onKeyUp, event)),
     // We set a default value on the component in order to force it into the controlled mode.
     value: value ?? '',
     onChange: onChange && (event => handleChange(event.target.value)),
@@ -140,6 +142,8 @@ function InternalInput(
       __onBlurWithDetail && fireNonCancelableEvent(__onBlurWithDetail, { relatedTarget: e.relatedTarget });
     },
     onFocus: onFocus && (() => fireNonCancelableEvent(onFocus)),
+    onCompositionStart: () => setCompositionState(true),
+    onCompositionEnd: () => setCompositionState(false),
     ...__nativeAttributes,
     ...reactAutofocusProps,
   };
