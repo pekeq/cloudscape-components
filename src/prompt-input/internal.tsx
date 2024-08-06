@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import React, { Ref, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import { useDensityMode } from '@cloudscape-design/component-toolkit/internal';
@@ -64,6 +64,8 @@ const InternalPromptInput = React.forwardRef(
     const PADDING = isRefresh ? tokens.spaceXxs : tokens.spaceXxxs;
     const LINE_HEIGHT = tokens.lineHeightBodyM;
 
+    const [inComposition, setInComposition] = useState(false);
+
     useImperativeHandle(
       ref,
       () => ({
@@ -78,6 +80,10 @@ const InternalPromptInput = React.forwardRef(
     );
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === 'Enter' && inComposition) {
+        return;
+      }
+
       if (onKeyDown) {
         fireKeyboardEvent(onKeyDown, event);
       }
