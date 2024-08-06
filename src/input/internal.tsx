@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import React, { Ref, useRef } from 'react';
+import React, { Ref, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import InternalButton from '../button/internal';
@@ -103,6 +103,8 @@ function InternalInput(
     ? formFieldContext
     : rest;
 
+  const [inComposition, setInComposition] = useState(false);
+
   const attributes: React.InputHTMLAttributes<HTMLInputElement> = {
     'aria-label': ariaLabel,
     // aria-labelledby has precedence over aria-label in accessible name calculation.
@@ -133,7 +135,7 @@ function InternalInput(
     step,
     inputMode,
     spellCheck: spellcheck,
-    onKeyDown: onKeyDown && (event => fireKeyboardEvent(onKeyDown, event)),
+    onKeyDown: onKeyDown && (event => !(inComposition && event.key === 'Enter') && (event => fireKeyboardEvent(onKeyDown, event)),
     onKeyUp: onKeyUp && (event => fireKeyboardEvent(onKeyUp, event)),
     // We set a default value on the component in order to force it into the controlled mode.
     value: value ?? '',
@@ -143,6 +145,8 @@ function InternalInput(
       __onBlurWithDetail && fireNonCancelableEvent(__onBlurWithDetail, { relatedTarget: e.relatedTarget });
     },
     onFocus: onFocus && (() => fireNonCancelableEvent(onFocus)),
+    onCompositionStart: () => setInComposition(true),
+    onCompositionEnd: () => setInComposition(false),
     ...__nativeAttributes,
   };
 
