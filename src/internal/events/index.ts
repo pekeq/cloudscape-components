@@ -34,6 +34,7 @@ export interface BaseKeyDetail {
   shiftKey: boolean;
   altKey: boolean;
   metaKey: boolean;
+  nativeEvent: KeyboardEvent;
 }
 
 export interface ClickDetail {
@@ -91,6 +92,7 @@ export function fireKeyboardEvent(handler: CancelableEventHandler<BaseKeyDetail>
       shiftKey: reactEvent.shiftKey,
       altKey: reactEvent.altKey,
       metaKey: reactEvent.metaKey,
+      nativeEvent: reactEvent.nativeEvent,
     },
     reactEvent
   );
